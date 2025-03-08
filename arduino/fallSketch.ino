@@ -27,12 +27,12 @@ unsigned long previousMillis = 0;
 Adafruit_MPU6050 mpu;
 
 // Fall detection parameters
-const float IMPACT_THRESHOLD = 3.5;      // Impact threshold in G's
-const float FREEFALL_THRESHOLD = 0.6;    // Free fall threshold in G's
-const float GYRO_THRESHOLD = 3.0;        // Rotation threshold in rad/s
 const int IMPACT_WINDOW = 100;           // Impact detection window (samples)
-const int MIN_FALL_DURATION = 15;        // Minimum fall duration (~150ms)
-const int MAX_FALL_DURATION = 50;        // Maximum fall duration (~500ms)
+const float IMPACT_THRESHOLD = 3.0;      // Reduced from 3.5
+const float FREEFALL_THRESHOLD = 0.7;    // Increased from 0.6
+const float GYRO_THRESHOLD = 2.5;        // Reduced from 3.0
+const int MIN_FALL_DURATION = 10;        // Reduced from 15
+const int MAX_FALL_DURATION = 75;   
 
 // Detection variables
 bool potentialFall = false;
@@ -149,13 +149,13 @@ bool validateFall(int freefall_idx, int impact_idx) {
     duration = BUFFER_SIZE - freefall_idx + impact_idx;
   }
   
-  // Check if duration is within expected range
-  if (duration < MIN_FALL_DURATION || duration > MAX_FALL_DURATION) {
+  // Relaxed duration check - longer window
+  if (duration < MIN_FALL_DURATION || duration > MAX_FALL_DURATION * 1.5) {
     falseAlert = true;
     return false;
   }
   
-  // Validate with gyroscope data - significant rotation should occur during fall
+  // Validate with gyroscope data
   float maxGyro = 0;
   int idx = freefall_idx;
   for (int i = 0; i < duration; i++) {
@@ -163,7 +163,7 @@ bool validateFall(int freefall_idx, int impact_idx) {
     idx = (idx + 1) % BUFFER_SIZE;
   }
   
-  // Check orientation change after impact
+  // Calculate orientation change
   float beforeFall[3], afterImpact[3];
   int beforeIdx = (freefall_idx + BUFFER_SIZE - 5) % BUFFER_SIZE;
   int afterIdx = (impact_idx + 5) % BUFFER_SIZE;
@@ -173,23 +173,20 @@ bool validateFall(int freefall_idx, int impact_idx) {
     afterImpact[i] = accelBuffer[afterIdx][i];
   }
   
-  // Calculate orientation change (dot product of normalized vectors)
   float magBefore = calculateAccelMagnitude(beforeFall[0], beforeFall[1], beforeFall[2]);
   float magAfter = calculateAccelMagnitude(afterImpact[0], afterImpact[1], afterImpact[2]);
   
-  // Normalize vectors
   for (int i = 0; i < 3; i++) {
     beforeFall[i] /= magBefore;
     afterImpact[i] /= magAfter;
   }
   
-  // Calculate dot product (smaller values indicate larger orientation change)
   float dotProduct = beforeFall[0]*afterImpact[0] + beforeFall[1]*afterImpact[1] + beforeFall[2]*afterImpact[2];
   
-  // Fall should have significant rotation AND orientation change
-  bool isValidFall = (maxGyro > GYRO_THRESHOLD && dotProduct < 0.7);
+  // Use OR instead of AND to make the detection more sensitive
+  // Also relax the thresholds
+  bool isValidFall = (maxGyro > GYRO_THRESHOLD * 0.8 || dotProduct < 0.8);
   
-  // Set false alert flag if it doesn't meet criteria
   if (!isValidFall) {
     falseAlert = true;
   } else {
