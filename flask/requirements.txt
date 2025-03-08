@@ -1,0 +1,6 @@
+pymongo==4.11.2
+flask==3.1.0
+gunicorn==23.0.0
+pytz==2024.2
+twilio==9.4.6
+dotenv==0.9.9
