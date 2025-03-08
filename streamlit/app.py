@@ -13,7 +13,6 @@ import json
 import requests
 from pathlib import Path
 import re
-import google.generativeai as genai
 
 # Page configuration
 st.set_page_config(
@@ -39,21 +38,6 @@ fall_collection = db[os.getenv("COLLECTION_NAME")]
 user_collection = db["users"]
 patient_collection = db["patients"]
 
-
-class LanguageModel:
-    def __init__(self, model_name, system_instruction, api_key):
-        self.model_name = model_name
-        self.system_instruction = system_instruction
-
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(
-            model_name=self.model_name,
-            system_instruction=self.system_instruction
-        )
-
-    def generate_content(self, text):
-        response = self.model.generate_content(text)
-        return response.text
 
 
 # Authentication functions
