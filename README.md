@@ -12,7 +12,6 @@ This system is designed to detect falls among elderly or at-risk individuals usi
    - ESP8266 microcontroller
    - MPU6050/MPU9250 IMU sensor (accelerometer and gyroscope)
    - Battery power supply
-   - 3D printed casing
 
 2. **Backend**
    - Flask API for data ingestion and alert processing
