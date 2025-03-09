@@ -26,11 +26,10 @@ This system is designed to detect falls among elderly or at-risk individuals usi
 
 ## Features
 
-- **Real-time fall detection** using machine learning algorithms
+- **Real-time fall detection** using algorithms
 - **Instant SMS alerts** to caretakers when falls are detected
 - **User management** to monitor multiple individuals
 - **Historical data analysis** of movements and incidents
-- **Battery status monitoring** of IoT devices
 - **Secure cloud storage** of all detection data
 - **Responsive web dashboard** for desktop and mobile access
 
@@ -99,13 +98,13 @@ This system is designed to detect falls among elderly or at-risk individuals usi
 
 1. **Streamlit Dashboard**
    ```bash
-   cd fall-detection-system/frontend
+   cd fallDetection/streamlit
    
    # Install dependencies
    pip install -r requirements.txt
    
    # Run the Streamlit app
-   streamlit run dashboard.py
+   streamlit run app.py
    ```
 
 ## Usage
