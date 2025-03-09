@@ -251,7 +251,7 @@ def show_dashboard(days, device_id=None):
         df_display = df_display.drop(columns=["_id","timestamp","detection"])
         print(df_display.columns)
         # columns_to_display = [col for col in df_display.columns if col != "_id"]
-        st.dataframe(df_display.head(10), use_container_width=True)
+        st.dataframe(df_display, use_container_width=True)
     
     # Patient information if a specific patient is selected
     if device_id:
